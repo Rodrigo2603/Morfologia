@@ -30,12 +30,12 @@ def erode(image, kernel):
                 output[i - pad_height, j - pad_width] = 255
                 
     eroded_image = Image.fromarray(output)
-    eroded_image.save('imagem_erosao.png')  # Salvar a imagem de erosão
+    eroded_image.save('imagem_erosao.png')
 
     return eroded_image
 
 def dilate(image, kernel):
-    img_array = np.array(image.convert('L'))  # Garantir que a imagem seja convertida para escala de cinza (L)
+    img_array = np.array(image.convert('L'))
     
     # Verificar se a imagem tem apenas 2 dimensões (escala de cinza)
     if img_array.ndim != 2:
@@ -59,41 +59,41 @@ def dilate(image, kernel):
                 output[i - pad_height, j - pad_width] = 255
                 
     dilated_image = Image.fromarray(output)
-    dilated_image.save('imagem_dilatacao.png')  # Salvar a imagem de dilatação
+    dilated_image.save('imagem_dilatacao.png') 
 
     return dilated_image
 
 def opening(image_path, kernel):
-    image = Image.open(image_path).convert('L')  # Abrir a imagem e converter para escala de cinza (L)
+    image = Image.open(image_path).convert('L')
     
     # Aplicar erosão
     eroded_image = erode(image, kernel)
     
     # Aplicar dilatação na imagem erodida
     dilated_image = dilate(eroded_image, kernel)
-    dilated_image.save('imagem_abertura.png')  # Salvar a imagem de abertura
+    dilated_image.save('imagem_abertura.png')
 
 def closing(image_path, kernel):
-    image = Image.open(image_path).convert('L')  # Abrir a imagem e converter para escala de cinza (L)
+    image = Image.open(image_path).convert('L')
     
     # Aplicar dilatação
     dilated_image = dilate(image, kernel)
     
     # Aplicar erosão na imagem dilatada
     eroded_image = erode(dilated_image, kernel)
-    eroded_image.save('imagem_fechamento.png')  # Salvar a imagem de fechamento
+    eroded_image.save('imagem_fechamento.png')
 
 def main():
-    image_path = 'teste3.png'  # Substitua com o caminho da sua imagem
+    image_path = 'teste3.png'
     kernel = np.ones((51, 51), np.uint8)  # Kernel 3x3
     
     escolha = input("Opções:\n'e' para erosão\n'd' para dilatação\n'a' para abertura\n'f' para fechamento\n").strip().lower()
     
     if escolha == 'e':
-        image = Image.open(image_path).convert('L')  # Abrir a imagem e converter para escala de cinza (L)
+        image = Image.open(image_path).convert('L')
         erode(image, kernel)
     elif escolha == 'd':
-        image = Image.open(image_path).convert('L')  # Abrir a imagem e converter para escala de cinza (L)
+        image = Image.open(image_path).convert('L')
         dilate(image, kernel)
     elif escolha == 'a':
         opening(image_path, kernel)      
