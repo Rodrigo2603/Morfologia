@@ -84,7 +84,7 @@ def closing(image_path, kernel):
     eroded_image.save('imagem_fechamento.png')
 
 def main():
-    image_path = 'teste3.png'
+    image_path = '' # Inserir o caminho da imagem
     kernel = np.ones((51, 51), np.uint8)  # Kernel 3x3
     
     escolha = input("Opções:\n'e' para erosão\n'd' para dilatação\n'a' para abertura\n'f' para fechamento\n").strip().lower()
