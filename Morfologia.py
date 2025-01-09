@@ -1,5 +1,10 @@
 import numpy as np
 from PIL import Image
+import os
+import rich.console as Console
+
+def clear_terminal():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def erode(image, kernel):
     img_array = np.array(image.convert('L'))  # Garantir que a imagem seja convertida para escala de cinza (L)
@@ -84,23 +89,62 @@ def closing(image_path, kernel):
     eroded_image.save('imagem_fechamento.png')
 
 def main():
-    image_path = '' # Inserir o caminho da imagem
-    kernel = np.ones((51, 51), np.uint8)  # Kernel 3x3
     
-    escolha = input("Opções:\n'e' para erosão\n'd' para dilatação\n'a' para abertura\n'f' para fechamento\n").strip().lower()
+    clear_terminal()
     
-    if escolha == 'e':
-        image = Image.open(image_path).convert('L')
-        erode(image, kernel)
-    elif escolha == 'd':
-        image = Image.open(image_path).convert('L')
-        dilate(image, kernel)
-    elif escolha == 'a':
-        opening(image_path, kernel)      
-    elif escolha == 'f':
-        closing(image_path, kernel)
-    else:
-        print("Escolha inválida.")
+    # Cria o console
+    console = Console.Console()
+    
+    # Listar imagens na pasta 'imagens'
+    def listar_imagens(pasta):
+        console.print("\nImagens disponíveis:")
+        imagens = [f for f in os.listdir(pasta) if os.path.isfile(os.path.join(pasta, f))]
+        for i, imagem in enumerate(imagens, start=1):
+            console.print(f"{i}. {imagem}", style="green")
+
+    pasta = 'imagens'
+    listar_imagens('imagens')
+    
+    imagem_escolhida = int(console.input(f"\nSelecione o número da imagem (1-{len(os.listdir(pasta))}): "))
+    image_path = os.path.join(pasta, os.listdir(pasta)[imagem_escolhida - 1])
+    
+    clear_terminal()
+    
+    # Determinando o tamanho do kernel, só podendo ser ímpar
+    while True:
+        kernel_size = int(console.input(f"Digite o tamanho do kernel [bold red](apenas números ímpares)[/bold red]: "))
+        if kernel_size % 2 != 0:
+            break
+        else:
+            print("O tamanho do kernel precisa ser um número ímpar. Tente novamente.")
+    
+    # Criando o kernel com valores 1
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    
+    clear_terminal()
+    
+    console.print(f"Imagem selecionada: [purple]{os.path.basename(image_path)}[/purple]\n", style="bold")
+    console.print("Opções:", style="bold underline")
+    console.print("'e' para [bold red]erosão[/bold red]", style="bold")
+    console.print("'d' para [bold blue]dilatação[/bold blue]", style="bold")
+    console.print("'a' para [bold green]abertura[/bold green]", style="bold")
+    console.print("'f' para [bold yellow]fechamento[/bold yellow]", style="bold")
+    
+    escolha = console.input("\nEscolha uma opção: ").strip().lower()
+    
+    match escolha:
+        case 'e':
+            image = Image.open(image_path).convert('L')
+            erode(image, kernel)
+        case 'd':
+            image = Image.open(image_path).convert('L')
+            dilate(image, kernel)
+        case 'a':
+            opening(image_path, kernel)
+        case 'f':
+            closing(image_path, kernel)
+        case _:
+            print("Escolha inválida.")
 
 if __name__ == "__main__":
     main()
