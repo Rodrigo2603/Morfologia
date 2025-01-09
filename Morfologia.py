@@ -51,7 +51,7 @@ def erode(image, kernel):
     output.save('imagem_erosao.png')
     return output
 
-def dilate(image, kernel):
+def dilate(image, kernel, condition):
     img_array = np.array(image.convert('L'))
     
     # Verificar se a imagem tem apenas 2 dimensões (escala de cinza)
@@ -75,30 +75,59 @@ def dilate(image, kernel):
             if np.any(region[kernel == 1] == 255):
                 output[i - pad_height, j - pad_width] = 255
                 
-    dilated_image = Image.fromarray(output)
-    dilated_image.save('imagem_dilatacao.png') 
+    
+    # Verificar se o arquivo já existe e criar um novo nome se necessário
+    file_path = os.path.join('imagens', 'imagem_dilatacao.png')
+    base, ext = os.path.splitext(file_path)
+    counter = 1
+    while os.path.exists(file_path):
+        file_path = f"{base}_{counter}{ext}"
+        counter += 1
 
-    return dilated_image
+    dilated_image = Image.fromarray(output)
+
+    if condition == True:
+        return dilated_image
+    else:
+        dilated_image.save(file_path)
 
 def opening(image_path, kernel):
     image = Image.open(image_path).convert('L')
     
     # Aplicar erosão
-    eroded_image = erode(image, kernel)
+    eroded_image = erode(image, kernel, True)
     
     # Aplicar dilatação na imagem erodida
-    dilated_image = dilate(eroded_image, kernel)
-    dilated_image.save('imagem_abertura.png')
+    dilated_image = dilate(eroded_image, kernel, True)
+    
+    # Verificar se o arquivo já existe e criar um novo nome se necessário
+    file_path = os.path.join('imagens', 'imagem_abertura.png')
+    base, ext = os.path.splitext(file_path)
+    counter = 1
+    while os.path.exists(file_path):
+        file_path = f"{base}_{counter}{ext}"
+        counter += 1
+
+    dilated_image.save(file_path)
 
 def closing(image_path, kernel):
     image = Image.open(image_path).convert('L')
     
     # Aplicar dilatação
-    dilated_image = dilate(image, kernel)
+    dilated_image = dilate(image, kernel, True)
     
     # Aplicar erosão na imagem dilatada
-    eroded_image = erode(dilated_image, kernel)
-    eroded_image.save('imagem_fechamento.png')
+    eroded_image = erode(dilated_image, kernel, True)
+    
+    # Verificar se o arquivo já existe e criar um novo nome se necessário
+    file_path = os.path.join('imagens', 'imagem_fechamento.png')
+    base, ext = os.path.splitext(file_path)
+    counter = 1
+    while os.path.exists(file_path):
+        file_path = f"{base}_{counter}{ext}"
+        counter += 1
+        
+    eroded_image.save(file_path)
 
 def main():
     
@@ -114,49 +143,64 @@ def main():
         for i, imagem in enumerate(imagens, start=1):
             console.print(f"{i}. {imagem}", style="green")
 
-    pasta = 'imagens'
-    listar_imagens('imagens')
-    
-    imagem_escolhida = int(console.input(f"\nSelecione o número da imagem (1-{len(os.listdir(pasta))}): "))
-    image_path = os.path.join(pasta, os.listdir(pasta)[imagem_escolhida - 1])
-    
-    clear_terminal()
-    
-    # Determinando o tamanho do kernel, só podendo ser ímpar
     while True:
-        kernel_size = int(console.input(f"Digite o tamanho do kernel [bold red](apenas números ímpares)[/bold red]: "))
-        if kernel_size % 2 != 0:
-            break
-        else:
-            print("O tamanho do kernel precisa ser um número ímpar. Tente novamente.")
-    
-    # Criando o kernel com valores 1
-    kernel = [[1] * kernel_size for _ in range(kernel_size)]
-    
-    clear_terminal()
-    
-    console.print(f"Imagem selecionada: [purple]{os.path.basename(image_path)}[/purple]\n", style="bold")
-    console.print("Opções:", style="bold underline")
-    console.print("'e' para [bold red]erosão[/bold red]", style="bold")
-    console.print("'d' para [bold blue]dilatação[/bold blue]", style="bold")
-    console.print("'a' para [bold green]abertura[/bold green]", style="bold")
-    console.print("'f' para [bold yellow]fechamento[/bold yellow]", style="bold")
-    
-    escolha = console.input("\nEscolha uma opção: ").strip().lower()
-    
-    match escolha:
-        case 'e':
-            image = Image.open(image_path).convert('L')
-            erode(image, kernel)
-        case 'd':
-            image = Image.open(image_path).convert('L')
-            dilate(image, kernel)
-        case 'a':
-            opening(image_path, kernel)
-        case 'f':
-            closing(image_path, kernel)
-        case _:
-            print("Escolha inválida.")
+        
+        clear_terminal()
+        
+        pasta = 'imagens'
+        listar_imagens('imagens')
+        
+        while True:
+            imagem_escolhida = int(console.input(f"\nSelecione o número da imagem (1-{len(os.listdir(pasta))}): "))
+            if 1 <= imagem_escolhida <= len(os.listdir(pasta)):
+                break
+            else:
+                console.print("Número inválido. Tente novamente.", style="bold red")
+                
+        image_path = os.path.join(pasta, os.listdir(pasta)[imagem_escolhida - 1])
+        
+        clear_terminal()
+        
+        # Determinando o tamanho do kernel, só podendo ser ímpar
+        while True:
+            kernel_size = int(console.input(f"Digite o tamanho do kernel [bold red](apenas números ímpares)[/bold red]: "))
+            if kernel_size % 2 != 0:
+                break
+            else:
+                print("O tamanho do kernel precisa ser um número ímpar. Tente novamente.")
+        
+        # Criando o kernel com valores 1
+        kernel = np.ones((kernel_size, kernel_size), np.uint8)
+        
+        clear_terminal()
+        
+        console.print(f"Imagem selecionada: [purple]{os.path.basename(image_path)}[/purple]\n", style="bold")
+        console.print("Opções:", style="bold underline")
+        console.print("'e' para [bold magenta]erosão[/bold magenta]", style="bold")
+        console.print("'d' para [bold blue]dilatação[/bold blue]", style="bold")
+        console.print("'a' para [bold green]abertura[/bold green]", style="bold")
+        console.print("'f' para [bold yellow]fechamento[/bold yellow]", style="bold")
+        console.print("'x' para [bold red]sair[/bold red]", style="bold")
+        
+        escolha = console.input("\nEscolha uma opção: ").strip().lower()
+        
+        # De acordo com a escolha do usuário, chama a função correspondente
+        
+        match escolha:
+            case 'e':
+                image = Image.open(image_path).convert('L')
+                erode(image, kernel)
+            case 'd':
+                image = Image.open(image_path).convert('L')
+                dilate(image, kernel)
+            case 'a':
+                opening(image_path, kernel)
+            case 'f':
+                closing(image_path, kernel)
+            case 'x':
+                break
+            case _:
+                console.print("Opção inválida. Tente novamente.", style="bold red")
 
 if __name__ == "__main__":
     main()
