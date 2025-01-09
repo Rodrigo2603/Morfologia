@@ -7,37 +7,49 @@ def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def erode(image, kernel):
-    img_array = np.array(image.convert('L'))  # Garantir que a imagem seja convertida para escala de cinza (L)
-    
-    # Verificar se a imagem tem apenas 2 dimensões (escala de cinza)
-    if img_array.ndim != 2:
-        raise ValueError("A imagem precisa ser em escala de cinza (2D).")
-    
-    output = np.zeros_like(img_array)
-    
-    # Garantir que o kernel tenha tamanho ímpar
-    if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
-        raise ValueError("O kernel precisa ter dimensões ímpares.")
-    
-    pad_height = kernel.shape[0] // 2
-    pad_width = kernel.shape[1] // 2
-    
-    # Verificar se a imagem tem dimensões válidas
-    if img_array.shape[0] <= kernel.shape[0] or img_array.shape[1] <= kernel.shape[1]:
-        raise ValueError("A imagem é muito pequena para o kernel fornecido.")
-    
-    padded_image = np.pad(img_array, ((pad_height, pad_height), (pad_width, pad_width)), mode='constant', constant_values=0)
-    
-    for i in range(pad_height, padded_image.shape[0] - pad_height):
-        for j in range(pad_width, padded_image.shape[1] - pad_width):
-            region = padded_image[i - pad_height:i + pad_height + 1, j - pad_width:j + pad_width + 1]
-            if np.all(region[kernel == 1] == 255):
-                output[i - pad_height, j - pad_width] = 255
-                
-    eroded_image = Image.fromarray(output)
-    eroded_image.save('imagem_erosao.png')
+    # Converter a imagem para escala de cinza (L) usando numpy
+    img_gray = np.array(image.convert('L'))
+    height, width = img_gray.shape
+    kernel_height, kernel_width = len(kernel), len(kernel[0])
 
-    return eroded_image
+    # Verificar se o kernel tem dimensões ímpares
+    if kernel_height % 2 == 0 or kernel_width % 2 == 0:
+        raise ValueError("O kernel precisa ter dimensões ímpares.")
+
+    pad_height = kernel_height // 2
+    pad_width = kernel_width // 2
+
+    # Verificar se a imagem tem dimensões válidas
+    if width <= kernel_width or height <= kernel_height:
+        raise ValueError("A imagem é muito pequena para o kernel fornecido.")
+
+    # Criar uma imagem de saída preenchida com zeros
+    output = Image.new('L', (width, height), 0)
+    output_pixels = output.load()
+
+    # Aplicar a erosão
+    for i in range(pad_height, height - pad_height):
+        for j in range(pad_width, width - pad_width):
+            region_match = True
+
+            # Verificar cada posição do kernel
+            for ki in range(kernel_height):
+                for kj in range(kernel_width):
+                    if kernel[ki][kj] == 1:
+                        pixel_value = img_gray[i + ki - pad_height, j + kj - pad_width]
+                        if pixel_value != 255:
+                            region_match = False
+                            break
+                if not region_match:
+                    break
+
+            # Definir o pixel de saída como branco se a região coincidir
+            if region_match:
+                output_pixels[j, i] = 255
+
+    # Salvar e retornar a imagem erodida
+    output.save('imagem_erosao.png')
+    return output
 
 def dilate(image, kernel):
     img_array = np.array(image.convert('L'))
@@ -119,7 +131,7 @@ def main():
             print("O tamanho do kernel precisa ser um número ímpar. Tente novamente.")
     
     # Criando o kernel com valores 1
-    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    kernel = [[1] * kernel_size for _ in range(kernel_size)]
     
     clear_terminal()
     
