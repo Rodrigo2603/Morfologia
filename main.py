@@ -9,7 +9,7 @@ def teste(imagem1, kernel, cx, cy):
 
     fig, [ax1,ax2] = plt.subplots(1,2)
     ax1.imshow(ImgOriginal,cmap='gray')
-    imagem = Operacoes.Dilation(ImgOriginal,kernel,cx,cy)
+    imagem = Operacoes.Erosion(ImgOriginal,kernel,cx,cy)
 
     ax2.imshow(imagem,cmap='gray')
     plt.show()
