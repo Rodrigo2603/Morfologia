@@ -47,4 +47,3 @@ def Binarizar(imagem):
                 ImgBin[x][y] = 0
 
     return ImgBin
- 

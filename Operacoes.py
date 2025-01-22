@@ -8,6 +8,32 @@ def Erosion(imagem, SE, centrox, centroy):
     if np.size(aux) > 2:
         imagem = imagem[:,:,0] # seleciona apenas uma matriz de cor caso a leitura seja rgb
         aux = np.shape(imagem)
+    
+    for x in range(aux[0]): # cria-se o complemento da imagem
+        for y in range(aux[1]):
+            imagem[x][y] = 1 - imagem[x][y]
+
+    ImgDilat = Dilation(imagem, SE, centrox, centroy) # erode o complemento da imagem
+
+    for x in range(aux[0]): # tira-se o complemento da imagem erodida
+        for y in range(aux[1]):
+            ImgDilat[x][y] = 1 - ImgDilat[x][y]
+
+    # corrige os valores das bordas
+
+    ImgDilat[:][-1] = ImgDilat[:][-2] 
+    ImgDilat[:][0] = ImgDilat[:][1]
+    ImgDilat[0][:] = ImgDilat[1][:]
+    ImgDilat[-1][:] = ImgDilat[-2][:] 
+
+    return ImgDilat
+
+def Dilation(imagem, SE, centrox, centroy):
+    aux = np.shape(imagem)
+
+    if np.size(aux) > 2:
+        imagem = imagem[:,:,0] # seleciona apenas uma matriz de cor caso a leitura seja rgb
+        aux = np.shape(imagem)
 
     ImgErod = [] # array vazio que será responsável pelas colunas da imagem
     ImgLinha = [] # array vazio que será responsável pelas linhas da imagem
@@ -40,32 +66,6 @@ def Erosion(imagem, SE, centrox, centroy):
 
     return ImgErod
 
-def Dilation(imagem, SE, centrox, centroy):
-    aux = np.shape(imagem)
-
-    if np.size(aux) > 2:
-        imagem = imagem[:,:,0] # seleciona apenas uma matriz de cor caso a leitura seja rgb
-        aux = np.shape(imagem)
-    
-    for x in range(aux[0]): # cria-se o complemento da imagem
-        for y in range(aux[1]):
-            imagem[x][y] = 1 - imagem[x][y]
-
-    ImgDilat = Erosion(imagem, SE, centrox, centroy) # erode o complemento da imagem
-
-    for x in range(aux[0]): # tira-se o complemento da imagem erodida
-        for y in range(aux[1]):
-            ImgDilat[x][y] = 1 - ImgDilat[x][y]
-
-    # corrige os valores das bordas
-
-    ImgDilat[:][-1] = ImgDilat[:][-2] 
-    ImgDilat[:][0] = ImgDilat[:][1]
-    ImgDilat[0][:] = ImgDilat[1][:]
-    ImgDilat[-1][:] = ImgDilat[-2][:] 
-
-    return ImgDilat
-
 def Opening(imagem,SE,centrox,centroy):
     ImgOpen = Dilation(Erosion(imagem,SE,centrox,centroy),SE,centrox,centroy)
     return ImgOpen
@@ -73,4 +73,3 @@ def Opening(imagem,SE,centrox,centroy):
 def Closing(imagem,SE,centrox,centroy):
     ImgClose = Erosion(Dilation(imagem,SE,centrox,centroy),SE,centrox,centroy)
     return ImgClose
-    
