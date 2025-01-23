@@ -13,30 +13,30 @@ def Erosion(imagem, SE, centrox, centroy):
         for y in range(colunas):
             imagem[x][y] = 1 - imagem[x][y]
 
-    ImgDilat = Dilation(imagem, SE, centrox, centroy)  # Dilata o complemento
+    ImgErode = Dilation(imagem, SE, centrox, centroy)  # Dilata o complemento
 
     # Tira o complemento da imagem erodida
     for x in range(linhas):
         for y in range(colunas):
-            ImgDilat[x][y] = 1 - ImgDilat[x][y]
+            ImgErode[x][y] = 1 - ImgErode[x][y]
 
     # Corrige valores das bordas
     for i in range(linhas):
-        ImgDilat[i][0] = ImgDilat[i][1]
-        ImgDilat[i][-1] = ImgDilat[i][-2]
+        ImgErode[i][0] = ImgErode[i][1]
+        ImgErode[i][-1] = ImgErode[i][-2]
 
     for j in range(colunas):
-        ImgDilat[0][j] = ImgDilat[1][j]
-        ImgDilat[-1][j] = ImgDilat[-2][j]
+        ImgErode[0][j] = ImgErode[1][j]
+        ImgErode[-1][j] = ImgErode[-2][j]
 
-    return ImgDilat
+    return ImgErode
 
 def Dilation(imagem, SE, centrox, centroy):
     linhas = len(imagem)
     colunas = len(imagem[0])
     tam_SE = (len(SE), len(SE[0]))  # Tamanho do elemento estruturante
 
-    ImgErod = []  # Array para a imagem dilatada
+    ImgDilat = []  # Array para a imagem dilatada
     check = 0  # Flag para indicar se o SE está contido
     total = sum(SE[u][v] != 0 for u in range(tam_SE[0]) for v in range(tam_SE[1]))
 
@@ -55,8 +55,8 @@ def Dilation(imagem, SE, centrox, centroy):
                 check = 0
             else:
                 ImgLinha.append(0)
-        ImgErod.append(ImgLinha)
-    return ImgErod
+        ImgDilat.append(ImgLinha)
+    return ImgDilat
 
 def Opening(imagem, SE, centrox, centroy):
     return Dilation(Erosion(imagem, SE, centrox, centroy), SE, centrox, centroy)
