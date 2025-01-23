@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import utils
 import Operacoes
-
+import os
+from rich.console import Console
+from rich.prompt import Prompt
 
 def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
