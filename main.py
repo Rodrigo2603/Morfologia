@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import utils
 import Operacoes
-import numpy as np
 
 def teste(imagem1, kernel, cx, cy):
     ImgOriginal = utils.LerImagem("./imagens/{}.jpg".format(imagem1))
