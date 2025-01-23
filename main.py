@@ -72,6 +72,8 @@ if __name__ == '__main__':
     kernel = [[0,1,0],[1,1,1],[0,1,0]]
     kernel1 = [[0,1,0],[1,1,1],[0,0,0]]
     kernel2 = [[1,1,1],[1,1,1],[1,1,1]]
+    kernel3 = [[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1]]
+    kernel4 = [[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1]]
 
     diretorio_imagens = "./imagens"
     imagens_disponiveis = listar_imagens(diretorio_imagens)
@@ -88,4 +90,4 @@ if __name__ == '__main__':
     
     imagem_escolhida = imagens_disponiveis[escolha].split('.')[0]
     
-    executa_morfologia(imagem_escolhida, kernel2, 1, 1)
+    executa_morfologia(imagem_escolhida, kernel4, 4, 4)
