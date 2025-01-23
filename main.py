@@ -22,7 +22,30 @@ def executa_morfologia(imagem1, kernel, cx, cy):
 
     fig, [ax1,ax2] = plt.subplots(1,2)
     ax1.imshow(ImgOriginal,cmap='gray')
-    imagem = Operacoes.Erosion(ImgOriginal,kernel,cx,cy)
+    
+    clear_terminal()    
+    
+    # Executa a escolha para Erosão, Dilatação, Abertura e Fechamento
+    console.print("\n[bold blue]Escolha a operação desejada:[/bold blue]\n")
+    console.print("[bold yellow]1[/bold yellow]: [bold magenta]Erosão[/bold magenta]")
+    console.print("[bold yellow]2[/bold yellow]: [bold magenta]Dilatação[/bold magenta]")
+    console.print("[bold yellow]3[/bold yellow]: [bold magenta]Abertura[/bold magenta]")
+    console.print("[bold yellow]4[/bold yellow]: [bold magenta]Fechamento[/bold magenta]")
+    
+    operacao = Prompt.ask("\n[blue]Escolha o número da operação que deseja realizar [blue]", console=console)
+    
+    match operacao:
+        case "1":
+            imagem = Operacoes.Erosion(ImgOriginal,kernel,cx,cy)
+        case "2":
+            imagem = Operacoes.Dilation(ImgOriginal,kernel,cx,cy)
+        case "3":
+            imagem = Operacoes.Opening(ImgOriginal,kernel,cx,cy)
+        case "4":
+            imagem = Operacoes.Closing(ImgOriginal,kernel,cx,cy)
+        case _:
+            console.print("\n[bold red]Escolha uma operação válida![/bold red]")
+            return
 
     ax2.imshow(imagem,cmap='gray')
     plt.show()
@@ -64,5 +87,5 @@ if __name__ == '__main__':
             
     
     imagem_escolhida = imagens_disponiveis[escolha].split('.')[0]
-
+    
     executa_morfologia(imagem_escolhida, kernel2, 1, 1)
