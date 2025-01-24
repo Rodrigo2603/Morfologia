@@ -49,6 +49,8 @@ def executa_morfologia(imagem1, kernel, cx, cy):
 
     ax2.imshow(imagem,cmap='gray')
     plt.show()
+    # salvar imagem resultante
+    utils.SalvarImagem(imagem, f"./imagens/{imagem1}_resultante.png")
 
 if __name__ == '__main__':
         

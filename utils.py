@@ -6,6 +6,10 @@ def LerImagem(nome):
     imagem = mpimg.imread(nome)
     return imagem
 
+# salva a imagem
+def SalvarImagem(imagem, nome):
+    mpimg.imsave(nome, imagem, cmap='gray')
+
 def Binarizar(imagem):
     aux = np.shape(imagem)
 
