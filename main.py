@@ -49,8 +49,25 @@ def executa_morfologia(imagem1, kernel, cx, cy):
 
     ax2.imshow(imagem,cmap='gray')
     plt.show()
-    # salvar imagem resultante
-    utils.SalvarImagem(imagem, f"./imagens/{imagem1}_resultante.png")
+    
+    clear_terminal()
+    
+    console.print("\n[bold blue]Deseja salvar a imagem resultante?[/bold blue]\n")
+    console.print("[bold yellow]1[/bold yellow]: [bold magenta]Sim[/bold magenta]")
+    console.print("[bold yellow]2[/bold yellow]: [bold magenta]Não[/bold magenta]")
+    
+    salvar = Prompt.ask("\n[blue]Escolha o número da opção desejada [blue]", console=console)
+    
+    if salvar == "1":
+    
+        # salvar imagem resultante
+        utils.SalvarImagem(imagem, f"./imagens/{imagem1}_resultante.jpg")
+        
+        console.print("\n[bold green]Imagem salva com sucesso![/bold green]\n")
+        
+    else:
+        console.print("\n[bold red]Imagem não salva![/bold red]\n")
+        
 
 if __name__ == '__main__':
         
